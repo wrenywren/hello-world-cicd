@@ -1,0 +1,89 @@
+# Default values for hello-world chart.
+# These are overridable via --set flags or -f values files at install time.
+
+# Number of pod replicas to run
+replicaCount: 1
+
+# Container image configuration
+# Override tag from CI by passing --set image.tag=<git-sha>
+image:
+  # Full image reference including registry host
+  repository: ghcr.io/YOUR_GITHUB_USERNAME/hello-world
+  # IfNotPresent avoids re-pulling on every pod start
+  pullPolicy: IfNotPresent
+  # Empty tag falls back to Chart.yaml appVersion
+  tag: ""
+
+# Kubernetes Service configuration
+# ClusterIP is internal-only; access via `kubectl port-forward` locally
+service:
+  type: ClusterIP
+  # External port on the Service object
+  port: 80
+  # Port on the container (matches EXPOSE in Dockerfile and gunicorn bind)
+  targetPort: 5000
+
+# Resource requests and limits
+# Requests = guaranteed minimum, Limits = hard ceiling
+# Small values since this is a toy Flask app
+resources:
+  requests:
+    cpu: 50m # 50 millicores = 0.05 CPU
+    memory: 64Mi # 64 MiB
+  limits:
+    cpu: 200m # 200 millicores = 0.2 CPU
+    memory: 128Mi # 128 MiB
+
+# Container-level security context
+# Mirrors the non-root user configuration in the Dockerfile for defense-in-depth
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+# Liveness probe: restart the pod if this fails
+# Points to /health endpoint defined in the Flask app
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+# Readiness probe: stop sending traffic if this fails (pod stays alive)
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+
+  # --- The following are intentionally omitted for this assignment ---
+# Each would be added in a production deployment, documented here
+# to show they were considered rather than overlooked.
+
+# Ingress for external HTTP access. Omitted: using port-forward locally.
+# ingress:
+#   enabled: false
+
+# Horizontal Pod Autoscaler. Omitted: requires metrics-server in cluster.
+# autoscaling:
+#   enabled: false
+
+# ServiceAccount with RBAC. Omitted: app makes no Kubernetes API calls.
+# serviceAccount:
+#   create: true
+
+# Pod-level security context (fsGroup, supplementalGroups, etc).
+# Container-level securityContext above is sufficient for this app.
+# podSecurityContext: {}
+
+# Scheduling constraints for production node pools.
+# nodeSelector: {}
+# tolerations: []
+# affinity: {}

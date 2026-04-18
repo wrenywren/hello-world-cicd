@@ -9,3 +9,4 @@ build/
 .venv/
 venv/
 *_DELETE_ME.md
+WORKLOG*.md
