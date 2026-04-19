@@ -10,9 +10,9 @@ image:
   # Full image reference including registry host
   repository: ghcr.io/wrenywren/hello-world-cicd
   # IfNotPresent avoids re-pulling on every pod start
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Empty tag falls back to Chart.yaml appVersion
-  tag: ""
+  tag: "latest"
 
 # Kubernetes Service configuration
 # ClusterIP is internal-only; access via `kubectl port-forward` locally
