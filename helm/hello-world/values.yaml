@@ -8,7 +8,7 @@ replicaCount: 1
 # Override tag from CI by passing --set image.tag=<git-sha>
 image:
   # Full image reference including registry host
-  repository: ghcr.io/YOUR_GITHUB_USERNAME/hello-world
+  repository: ghcr.io/wrenywren/hello-world
   # IfNotPresent avoids re-pulling on every pod start
   pullPolicy: IfNotPresent
   # Empty tag falls back to Chart.yaml appVersion
