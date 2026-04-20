@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-world-staging
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/wrenywren/hello-world-cicd.git
+    targetRevision: main
+    path: helm/hello-world
+    helm:
+      releaseName: hello-world
+      # Layer staging-specific values on top of base values.yaml
+      valueFiles:
+        - values.yaml
+        - values-staging.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: staging
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      # Create the staging namespace if it doesn't exist
+      - CreateNamespace=true
