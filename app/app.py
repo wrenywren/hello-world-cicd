@@ -5,12 +5,12 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def hello():
-    return "Hello World", 200
+    return "Hello World\n", 200
 
 
 @app.route("/health", methods=["GET"])
 def health():
-    return "OK", 200
+    return "OK\n", 200
 
 
 if __name__ == "__main__":
