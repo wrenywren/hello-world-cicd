@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-world
+  namespace: argocd
+  # Finalizer ensures child resources are cleaned up when Application is deleted
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # The ArgoCD project this Application belongs to
+  # `default` is the built-in project with no restrictions
+  project: default
+
+  # Where to get the manifests from
+  source:
+    # Your GitHub repo - replace if yours is different
+    repoURL: https://github.com/wrenywren/hello-world-cicd.git
+    # Which branch/tag/commit to track
+    targetRevision: main
+    # Path within the repo to the chart
+    path: helm/hello-world
+    helm:
+      # Name of the Helm release ArgoCD will create
+      releaseName: hello-world
+
+  # Where to deploy to
+  destination:
+    # In-cluster deployment (same cluster ArgoCD runs in)
+    server: https://kubernetes.default.svc
+    # Target namespace for the app
+    namespace: default
+
+  syncPolicy:
+    # Automated sync - ArgoCD applies changes automatically when detected
+    automated:
+      # Prune: delete resources that are no longer in Git
+      prune: true
+      # SelfHeal: revert any manual kubectl changes back to Git state
+      selfHeal: true
+    syncOptions:
+      # Create the target namespace if it doesn't exist (here it does - default)
+      - CreateNamespace=true
