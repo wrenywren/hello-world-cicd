@@ -1,0 +1,27 @@
+# Staging environment overrides
+# Applied on top of values.yaml - only differences from base defined here
+
+# Single replica is enough for staging - lower cost, faster iteration
+# (matches base default of 1, but explicit here to document the intent)
+replicaCount: 1
+
+# Staging tracks latest image from main branch
+# Tradeoff: image changes don't show up as Git diffs, which breaks strict
+# GitOps auditability. Acceptable in staging where velocity > traceability.
+image:
+  tag: "latest"
+  pullPolicy: Always
+
+# Lower resource budget for staging workloads
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m      # Half of prod
+    memory: 128Mi
+
+# Staging-specific label for observability filtering
+# e.g., Datadog/Grafana can filter dashboards by environment
+podLabels:
+  environment: staging

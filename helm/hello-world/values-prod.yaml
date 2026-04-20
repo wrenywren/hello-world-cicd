@@ -1,0 +1,27 @@
+# Production environment overrides
+# Applied on top of values.yaml - only differences from base defined here
+
+# Multiple replicas for high availability
+# If one pod fails or a node drains, traffic continues
+replicaCount: 3
+
+# Production pins to a specific immutable image tag
+# ArgoCD detects tag string changes = auditable deploys via Git history
+# Update this value to a new SHA when promoting a build to production
+image:
+  tag: "e05d404"   # Pinned to specific git SHA - update via PR to release
+  pullPolicy: IfNotPresent   # Safe because tag is immutable
+
+# Generous resource budget for production workloads
+# Based on observed usage + 30% headroom (values are illustrative for this demo)
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+# Production label for observability and alerting routing
+podLabels:
+  environment: production
